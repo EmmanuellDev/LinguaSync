@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const App = () => {
   const [sourceText, setSourceText] = useState("");
@@ -18,13 +19,22 @@ const App = () => {
     { code: "zh", name: "Chinese" },
   ];
 
-  // Simulating Translation API (mock function)
+  // Function to call LibreTranslate API
   const translateText = async (text, sourceLang, targetLang) => {
-    // Simulate API delay
-    setTimeout(() => {
-      // This is just a mock - in a real scenario, you would call the actual API
-      setTranslatedText(`${text} (translated to ${targetLang})`);
-    }, 500);
+    try {
+      const response = await axios.post("https://libretranslate.de/translate", {
+        q: text,
+        source: sourceLang,
+        target: targetLang,
+        format: "text",
+      });
+
+      // Extract translated text from the response
+      setTranslatedText(response.data.translatedText);
+    } catch (error) {
+      console.error("Error translating text:", error);
+      setTranslatedText("Translation failed. Please try again.");
+    }
   };
 
   // Trigger translation whenever the source text or languages change
